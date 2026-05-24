@@ -1,0 +1,43 @@
+{
+    "actorSpecification": 1,
+    "name": "phoneinfoga-phone-osint",
+    "title": "PhoneInfoga - International Phone Number OSINT",
+    "description": "Scan international phone numbers with PhoneInfoga: validate format, identify country/carrier, and generate OSINT footprint URLs across social media, reputation sites, and disposable-number databases. Wraps the 16K-star OSINT tool by sundowndev.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "meta": {
+        "templateId": "python-start"
+    },
+    "input": "./INPUT_SCHEMA.json",
+    "output": "./output_schema.json",
+    "dockerfile": "../Dockerfile",
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "title": "Phone OSINT results",
+            "views": {
+                "overview": {
+                    "title": "Overview",
+                    "transformation": {
+                        "fields": ["target", "status", "country", "local_format", "international", "carrier", "line_type", "valid", "googlesearch_url_count", "scanners_succeeded"]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "target": {"label": "Phone Number"},
+                            "status": {"label": "Status"},
+                            "country": {"label": "Country"},
+                            "local_format": {"label": "Local Format"},
+                            "international": {"label": "International"},
+                            "carrier": {"label": "Carrier"},
+                            "line_type": {"label": "Line Type"},
+                            "valid": {"label": "Valid"},
+                            "googlesearch_url_count": {"label": "OSINT URLs"},
+                            "scanners_succeeded": {"label": "Scanners OK"}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

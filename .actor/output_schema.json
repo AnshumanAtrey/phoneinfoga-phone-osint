@@ -1,0 +1,19 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "PhoneInfoga output",
+    "description": "Per-number OSINT result + a final summary record.",
+    "properties": {
+        "dataset": {
+            "type": "string",
+            "title": "Dataset",
+            "description": "Default dataset containing one record per scanned phone number plus a final summary record.",
+            "template": "{{links.publicRunUrl}}/dataset"
+        },
+        "log": {
+            "type": "string",
+            "title": "Log",
+            "description": "Full run log.",
+            "template": "{{links.publicRunUrl}}/log"
+        }
+    }
+}

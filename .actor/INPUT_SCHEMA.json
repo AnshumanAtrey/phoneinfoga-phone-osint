@@ -1,0 +1,50 @@
+{
+    "title": "PhoneInfoga input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "numbers": {
+            "title": "Phone numbers to scan",
+            "type": "array",
+            "description": "List of phone numbers in international E.164 format (e.g. +14155552671, +919876543210). Each number is scanned independently and produces one dataset record.",
+            "editor": "stringList",
+            "prefill": ["+14155552671"],
+            "minItems": 1,
+            "maxItems": 1000,
+            "sectionCaption": "Targets"
+        },
+        "disableScanners": {
+            "title": "Disable scanners",
+            "type": "array",
+            "description": "Scanners to skip. Useful if you only want offline data (disable googlesearch, ovh, numverify, googlecse to get only local libphonenumber output).",
+            "editor": "select",
+            "items": {
+                "type": "string",
+                "enum": ["googlesearch", "ovh", "numverify", "googlecse"]
+            },
+            "default": [],
+            "sectionCaption": "Scanner control"
+        },
+        "numverifyApiKey": {
+            "title": "Numverify API key (optional)",
+            "type": "string",
+            "description": "Your numverify.com API key. Without it the numverify scanner is skipped. Free tier: 100 lookups/month.",
+            "editor": "textfield",
+            "isSecret": true
+        },
+        "googleCseApiKey": {
+            "title": "Google CSE API key (optional)",
+            "type": "string",
+            "description": "Google Custom Search Engine API key, paired with a CX id. Without both the googlecse scanner is skipped.",
+            "editor": "textfield",
+            "isSecret": true
+        },
+        "googleCseCx": {
+            "title": "Google CSE CX id (optional)",
+            "type": "string",
+            "description": "Google CSE search engine identifier (cx). Paired with the Google CSE API key.",
+            "editor": "textfield"
+        }
+    },
+    "required": ["numbers"]
+}
