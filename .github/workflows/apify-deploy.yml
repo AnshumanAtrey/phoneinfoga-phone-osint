@@ -1,0 +1,44 @@
+# Deploy this Actor to Apify on every push to main.
+#
+# Verified 2026-09-08:
+#   - apify/push-actor-action@v1 exists (latest release v1.1.4); the action file is
+#     action.yaml. It runs setup-apify-cli-action@v1 then `apify push`.
+#   - It does NOT pass --force. That's fine: actions/checkout sets file mtimes to
+#     checkout time, so the CLI's "modified on platform since local" guard passes.
+#   - `apify push` on an existing Actor updates only
+#     {tarballUrl, sourceFiles, buildTag, sourceType, envVars}. Store title/description
+#     are sent only on actors().create(), so live SEO titles are not touched.
+#   - version + buildTag come from .actor/actor.json (all 14 are set correctly).
+#
+# paths-ignore covers .github/** only, so adding this file does not itself deploy,
+# but README/llms.txt changes DO deploy (the store listing is built from the README).
+
+name: Deploy to Apify
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '.github/**'
+  workflow_dispatch:
+
+concurrency:
+  group: apify-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Push Actor to Apify
+        id: push
+        uses: apify/push-actor-action@v1
+        with:
+          token: ${{ secrets.APIFY_TOKEN }}
+
+      - name: Report build
+        run: |
+          echo "build ${{ steps.push.outputs.build-number }} -> ${{ steps.push.outputs.build-status }}"
+          test "${{ steps.push.outputs.build-status }}" = "SUCCEEDED"
