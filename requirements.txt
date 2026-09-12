@@ -1,1 +1,1 @@
-apify>=2.0.0
+apify>=3.4,<4  # pinned: SDK 4.0 made push_data's charging argument keyword-only (holehe outage 2026-09-12); last good builds ran 3.4.x
