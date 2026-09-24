@@ -42,3 +42,28 @@ jobs:
         run: |
           echo "build ${{ steps.push.outputs.build-number }} -> ${{ steps.push.outputs.build-status }}"
           test "${{ steps.push.outputs.build-status }}" = "SUCCEEDED"
+
+  # List this Actor in the official MCP Registry, pointing at Apify's hosted MCP
+  # endpoint (callers bring their own Apify token, so runs bill as usual).
+  # Runs only after a successful deploy. GitHub OIDC proves io.github.<owner>/*,
+  # so no secret is needed. The registry rejects a repeated version, so the patch
+  # number is the workflow run number (see scripts/mcp-server-json.mjs).
+  mcp-registry:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build server.json
+        run: node scripts/mcp-server-json.mjs > server.json && cat server.json
+
+      - name: Install mcp-publisher
+        run: curl -sSfL https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz | tar xz mcp-publisher
+
+      - name: Publish to MCP Registry
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
