@@ -1,8 +1,9 @@
 {
   "actorSpecification": 1,
   "name": "phoneinfoga-phone-osint",
-  "title": "PhoneInfoga - International Phone Number OSINT",
-  "description": "Scan international phone numbers with PhoneInfoga: validate format, identify country/carrier, and generate OSINT footprint URLs across social media, reputation sites, and disposable-number databases. Wraps the 16K-star OSINT tool by sundowndev.",
+  "categories": ["DEVELOPER_TOOLS", "AUTOMATION", "LEAD_GENERATION"],
+    "title": "PhoneInfoga Cloud - International Phone Number OSINT | Bulk",
+  "description": "Scan international phone numbers with PhoneInfoga: validate format, identify country, and generate OSINT footprint URLs across social media, reputation sites, disposable-number databases, and paste/document searches. Wraps the 16K-star OSINT tool by sundowndev.",
   "version": "0.1",
   "buildTag": "latest",
   "meta": {

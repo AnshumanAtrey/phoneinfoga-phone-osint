@@ -37,7 +37,7 @@ Pay-per-event:
 | Event | Price | When it fires |
 |---|---|---|
 | `Actor Start` | $0.0001 | Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event) |
-| `Phone OSINT result` | $0.02 | Single phone-number record in the default dataset (includes country, validation, carrier hints, and OSINT footprint URLs) |
+| `Phone OSINT result` | $0.02 | Single phone-number record in the default dataset (includes country, validation, carrier hints, and OSINT footprint URLs). On paid Apify plans: $0.018 on Scale, $0.016 on Business and above. |
 
 ### Typical scan costs
 

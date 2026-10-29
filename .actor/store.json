@@ -1,0 +1,64 @@
+{
+  "$comment": "Store listing fields that apify push never sends. Applied by scripts/store-metadata.mjs after every deploy. Title, description and categories live in actor.json. Created 2026-10-29 from the live listing, so adding the CI kit changed nothing by itself.",
+  "actorId": "oCA4wqMdQBG0Jwxtx",
+  "seoTitle": "Phone Number OSINT - International Lookup + Reverse | Bulk",
+  "seoDescription": "Cloud PhoneInfoga for international phone number OSINT. Validate format, identify country (libphonenumber), generate OSINT footprint URLs across social, reputation, disposable-number sites. Bulk API.",
+  "exampleRunInput$comment": "The prefill: Twilio's documented sample number. The live example also had +919876543210, a real-format Indian number that may belong to a person, so it is gone (2026-10-30).",
+  "exampleRunInput": {
+    "numbers": [
+      "+14155552671"
+    ]
+  },
+  "actorPermissionLevel": "LIMITED_PERMISSIONS",
+  "isPublic": true,
+  "defaultRunOptions": {
+    "build": "latest",
+    "memoryMbytes": 1024,
+    "timeoutSecs": 600
+  },
+  "pricing": {
+    "apply": true,
+    "$comment": "Store discounts (owner's Gentle ladder, rolled out 2026-10-29 after holehe and social-analyzer): Free and Starter keep the flat price, Scale pays 10% less, Business and above 20% less; apify-actor-start stays flat. Aug-Oct paid revenue of this actor came almost all from Starter, and Apify bills our platform cost of Scale and Business runs lower only when discounts are on (compute $0.16 and $0.13 per CU instead of $0.20, https://docs.apify.com/actors/monetize/pricing-and-costs.md). The CI script applies first-time pricing and decreases; increases go through Console with 14 days' notice.",
+    "pricingInfos": [
+      {
+        "pricingModel": "PAY_PER_EVENT",
+        "apifyMarginPercentage": 0.2,
+        "pricingPerEvent": {
+          "actorChargeEvents": {
+            "apify-actor-start": {
+              "eventTitle": "Actor Start",
+              "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+              "eventPriceUsd": 0.0001
+            },
+            "apify-default-dataset-item": {
+              "eventTitle": "Phone OSINT result",
+              "eventDescription": "Single phone-number record in the default dataset (includes country, validation, carrier hints, and OSINT footprint URLs).",
+              "isPrimaryEvent": true,
+              "eventTieredPricingUsd": {
+                "FREE": {
+                  "tieredEventPriceUsd": 0.02
+                },
+                "BRONZE": {
+                  "tieredEventPriceUsd": 0.02
+                },
+                "SILVER": {
+                  "tieredEventPriceUsd": 0.018
+                },
+                "GOLD": {
+                  "tieredEventPriceUsd": 0.016
+                },
+                "PLATINUM": {
+                  "tieredEventPriceUsd": 0.016
+                },
+                "DIAMOND": {
+                  "tieredEventPriceUsd": 0.016
+                }
+              }
+            }
+          }
+        },
+        "reasonForChange": "Store discounts: Scale plans pay 10% less and Business and enterprise plans 20% less. Free and Starter prices are unchanged."
+      }
+    ]
+  }
+}

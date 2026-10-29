@@ -1,0 +1,34 @@
+{
+  "$comment": "Example tasks published on the Store by scripts/publish-tasks.mjs after every deploy (CI only). Each one is a search people type, with its own Google-indexed landing page and .md (manager/rules/SEO.md). Numbers are Twilio's documented sample and ranges reserved for fiction (US 555-01xx, UK 020 7946 0xxx, Australia 0491 570 xxx), never a real person's.",
+  "options": {
+    "build": "latest",
+    "memoryMbytes": 1024,
+    "timeoutSecs": 600
+  },
+  "tasks": [
+    {
+      "name": "phone-number-osint-lookup",
+      "title": "Phone number OSINT lookup: country, line type and footprints",
+      "description": "Look up an international phone number with PhoneInfoga: whether it is valid, its country and line type, local and international formats, and ready-made search links for its footprint on social networks, reputation sites, disposable-number lists and pasted documents. Replace the example with the number you are checking.",
+      "input": {
+        "numbers": ["+14155552671"]
+      },
+      "seoTitle": "Phone Number OSINT Lookup - PhoneInfoga in the Cloud",
+      "seoDescription": "Look up a phone number: valid or not, country, line type, formats and footprint search links on social, reputation and disposable-number sites.",
+      "inputSchemaFields": ["numbers", "disableScanners", "numverifyApiKey"],
+      "datasetView": "overview"
+    },
+    {
+      "name": "bulk-phone-number-validator",
+      "title": "Bulk phone number validator: many numbers in one run",
+      "description": "Check a list of international phone numbers at once: valid or not, country, carrier where known, line type and E.164 format for each, plus footprint search links. Numbers that are not valid are reported and not charged. The examples are numbers reserved for fiction.",
+      "input": {
+        "numbers": ["+12025550123", "+442079460123", "+61491570156"]
+      },
+      "seoTitle": "Bulk Phone Number Validator - Country and Line Type",
+      "seoDescription": "Validate many international phone numbers in one run: country, carrier, line type and E.164 format for each. Invalid numbers are not charged.",
+      "inputSchemaFields": ["numbers", "disableScanners"],
+      "datasetView": "overview"
+    }
+  ]
+}

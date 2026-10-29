@@ -21,6 +21,10 @@ on:
     paths-ignore:
       - '.github/**'
   workflow_dispatch:
+    inputs:
+      build_tag:
+        description: 'Build tag for a staging build, e.g. beta (default: latest from .actor/actor.json). Run it with build=beta; users keep running latest.'
+        required: false
 
 concurrency:
   group: apify-deploy-${{ github.ref }}
@@ -32,16 +36,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The actor is pinned by ID (.actor/store.json actorId), so a rename of
+      # actor.json "name" updates the same actor instead of creating a new one.
+      - name: Read actor ID
+        id: meta
+        run: echo "actor_id=$(node -p "require('./.actor/store.json').actorId || ''")" >> "$GITHUB_OUTPUT"
+
       - name: Push Actor to Apify
         id: push
         uses: apify/push-actor-action@v1
         with:
           token: ${{ secrets.APIFY_TOKEN }}
+          actor-id: ${{ steps.meta.outputs.actor_id }}
+          build-tag: ${{ inputs.build_tag }}
 
       - name: Report build
         run: |
           echo "build ${{ steps.push.outputs.build-number }} -> ${{ steps.push.outputs.build-status }}"
           test "${{ steps.push.outputs.build-status }}" = "SUCCEEDED"
+
+      # apify push never updates the Store listing of an existing Actor (title,
+      # description, SEO fields, categories, permissions, example input, run
+      # defaults). This keeps GitHub the source of truth for the listing too.
+      - name: Sync Store listing metadata
+        if: ${{ !inputs.build_tag }}
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: node scripts/store-metadata.mjs
+
+      # Example tasks are Store landing pages of their own (Google-indexed, with a .md for AI agents).
+      # Created and updated from .actor/tasks.json; never deleted.
+      - name: Publish example tasks
+        if: ${{ !inputs.build_tag }}
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: node scripts/publish-tasks.mjs
 
   # List this Actor in the official MCP Registry, pointing at Apify's hosted MCP
   # endpoint (callers bring their own Apify token, so runs bill as usual).
@@ -50,6 +79,7 @@ jobs:
   # number is the workflow run number (see scripts/mcp-server-json.mjs).
   mcp-registry:
     needs: deploy
+    if: ${{ !inputs.build_tag }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
