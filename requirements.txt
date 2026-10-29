@@ -1,1 +1,1 @@
-apify>=3.4,<4  # pinned: SDK 4.0 made push_data's charging argument keyword-only (holehe outage 2026-09-12); last good builds ran 3.4.x
+apify>=4.1,<5  # SDK 3.4.1 crashed on runs from Apify's AI assistant (meta.origin APIFY_AI) at set_status_message; push_data passes no charging argument positionally

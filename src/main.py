@@ -167,17 +167,17 @@ async def main() -> None:
         failed = 0
         invalid = 0
         total = len(raw_numbers)
+        # Each dataset row is billed as a result, so only numbers phoneinfoga actually scanned become
+        # rows. Invalid, timed-out, crashed and failed scans, and the run summary, used to be rows too
+        # (a one-number run billed 2 rows, run vl3zrNMa3BbplCRlk, 2026-10-29); they are listed in the
+        # status message and the OUTPUT record instead.
+        skipped: list[str] = []
 
         for idx, raw in enumerate(raw_numbers, 1):
             number = normalize_number(str(raw))
             if not E164_PATTERN.match(number):
                 Actor.log.warning(f"[{idx}/{total}] Skipping invalid E.164 number: {raw!r}")
-                await Actor.push_data({
-                    "target": raw,
-                    "status": "invalid_format",
-                    "error": "Number must be E.164 international format (e.g. +14155552671)",
-                    "scrapedAt": datetime.now(timezone.utc).isoformat(),
-                })
+                skipped.append(f"{raw}: not in E.164 international format (e.g. +14155552671)")
                 invalid += 1
                 continue
 
@@ -186,33 +186,21 @@ async def main() -> None:
                 output, rc = run_phoneinfoga(number, disable, env)
             except subprocess.TimeoutExpired:
                 Actor.log.warning(f"[{idx}/{total}] {number} timed out after 90s")
-                await Actor.push_data({
-                    "target": number,
-                    "status": "timeout",
-                    "error": "phoneinfoga scan exceeded 90s timeout",
-                    "scrapedAt": datetime.now(timezone.utc).isoformat(),
-                })
+                skipped.append(f"{number}: the scan took over 90 s")
                 failed += 1
                 continue
             except Exception as exc:
                 Actor.log.exception(f"[{idx}/{total}] {number} crashed: {exc}")
-                await Actor.push_data({
-                    "target": number,
-                    "status": "error",
-                    "error": str(exc),
-                    "scrapedAt": datetime.now(timezone.utc).isoformat(),
-                })
+                skipped.append(f"{number}: the scan crashed ({exc})")
                 failed += 1
                 continue
 
             record = parse_output(output, number)
             if rc != 0 and record["scanners_succeeded"] == 0:
-                record["status"] = "scan_failed"
-                record["error"] = f"phoneinfoga returned exit {rc}"
+                skipped.append(f"{number}: no scanner succeeded (phoneinfoga exit {rc})")
                 failed += 1
-            else:
-                ok += 1
-
+                continue
+            ok += 1
             await Actor.push_data(record)
 
         summary = {
@@ -225,8 +213,14 @@ async def main() -> None:
             "disabled_scanners": disable,
             "scrapedAt": datetime.now(timezone.utc).isoformat(),
         }
-        await Actor.push_data(summary)
+        summary["not_charged"] = skipped
+        await Actor.set_value("OUTPUT", summary)
+        note = f" {len(skipped)} not charged: " + " | ".join(skipped) if skipped else ""
         Actor.log.info(f"Done. ok={ok} failed={failed} invalid={invalid} total={total}")
+        if not ok:
+            await Actor.fail(status_message=f"No number could be scanned, so nothing was charged.{note}"[:900])
+            return
+        await Actor.set_status_message(f"Scanned {ok} of {total} number(s).{note}"[:900])
 
 
 if __name__ == "__main__":
