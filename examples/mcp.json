@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "phoneinfoga-phone-osint": {
+      "url": "https://mcp.apify.com?tools=anshumanatrey/phoneinfoga-phone-osint",
+      "headers": {
+        "Authorization": "Bearer <YOUR_APIFY_TOKEN>"
+      }
+    }
+  }
+}
